@@ -74,77 +74,123 @@ Clone the Repository:
     The server will start on the port specified in the .env file (default is 5000).
 
 **Frontend Setup (React):**
-  Navigate to the src folder and ensure all components and services are configured to call the API at the correct base URL.
-    Run the frontend using npm start if it's in a separate project setup.
+  - Navigate to the src folder and ensure all components and services are configured to call the API at the correct base URL.
+    - Run the frontend using npm start if it's in a separate project setup.
+  
 **Testing**
-  The project includes a full suite of tests using Jest and Supertest. To test the application, you’ll need to ensure the MongoMemoryServer is installed for an isolated in-memory database.
-    Running Tests
-      Run All Tests:
-      npm test
-        Test Explanation:
-**Unit Tests: Test individual components and functions in isolation.**
-  Integration Tests: Ensure different parts of the system work together (e.g., checking balance before joining a match).
-    E2E Tests: Full flow tests using endpoints and simulated user actions.
+  - The project includes a full suite of tests using Jest and Supertest. To test the application, you’ll need to ensure the MongoMemoryServer is installed for an isolated in-memory database.
+    - Running Tests
+      - Run All Tests:
+        - npm test
+    
+**Test Explanation:**
+  - _Unit Tests: Test individual components and functions in isolation._
+    - Integration Tests: Ensure different parts of the system work together (e.g., checking balance before joining a match).
+      - E2E Tests: Full flow tests using endpoints and simulated user actions.
+  
 **Test Files**
-  tests/auth.test.js: Tests registration and login functionality.
-    tests/match.test.js: Tests match creation, joining, and balance deduction.
-      tests/leaderboard.test.js: Tests retrieval of top players for the leaderboard.
-        tests/wallet.test.js: Tests wallet functions, including adding funds, viewing balance, and transaction history.
+  - tests/auth.test.js: Tests registration and login functionality.
+    - tests/match.test.js: Tests match creation, joining, and balance deduction.
+      - tests/leaderboard.test.js: Tests retrieval of top players for the leaderboard.
+        - tests/wallet.test.js: Tests wallet functions, including adding funds, viewing balance, and transaction history.
+  
 **Folder Structure**
-Here’s an overview of the project’s folder structure and the purpose of each key file.
+  - Here’s an overview of the project’s folder structure and the purpose of each key file.
+
 **MatchmakingSystem/**
-├── config/
-│   └── db.js                      # MongoDB connection setup
-├── controllers/
-│   ├── authController.js          # Handles user authentication
-│   ├── matchFinderController.js   # Manages match creation and joining
-│   ├── teamController.js          # Manages team creation and member management
-│   ├── userController.js          # Retrieves user profile and leaderboard
-│   └── walletController.js        # Handles wallet functionality (add funds, view balance)
-├── middleware/
-│   └── authMiddleware.js          # Protects routes requiring authentication
-├── models/
-│   ├── userModel.js               # Defines the user schema
-│   ├── matchModel.js              # Defines the match schema
-│   └── teamModel.js               # Defines the team schema
-├── routes/
-│   ├── authRoutes.js              # Routes for authentication
-│   ├── matchFinderRoutes.js       # Routes for matchmaking functions
-│   ├── teamRoutes.js              # Routes for team management
-│   ├── userRoutes.js              # Routes for user profile and leaderboard
-│   └── walletRoutes.js            # Routes for wallet functions
-├── src/
-│   ├── components/
-│   │   ├── AddFunds.js            # Component to add funds to wallet
-│   │   ├── WalletBalance.js       # Displays user balance
-│   │   └── TransactionHistory.js  # Displays transaction history
-│   └── services/
-│       ├── api.js                 # Configures Axios for API requests
-│       └── auth.js                # Auth API calls (login, register)
-├── tests/
-│   ├── auth.test.js               # Tests for auth API
-│   ├── match.test.js              # Tests for match API
-│   ├── leaderboard.test.js        # Tests for leaderboard API
-│   └── wallet.test.js             # Tests for wallet functions
-├── .env                           # Environment variables
-├── server.js                      # Main server entry point
-└── package.json                   # Project dependencies and scripts
+
+  ├── config/
+  
+  │   └── db.js # MongoDB connection setup
+  
+  ├── controllers/
+  
+  │   ├── authController.js # Handles user authentication
+  
+  │   ├── matchFinderController.js # Manages match creation and joining
+  
+  │   ├── teamController.js          # Manages team creation and member management
+  
+  │   ├── userController.js          # Retrieves user profile and leaderboard
+  
+  │   └── walletController.js        # Handles wallet functionality (add funds, view balance)
+  
+  ├── middleware/
+  
+  │   └── authMiddleware.js          # Protects routes requiring authentication
+  
+  ├── models/
+  
+  │   ├── userModel.js               # Defines the user schema
+  
+  │   ├── matchModel.js              # Defines the match schema
+  
+  │   └── teamModel.js               # Defines the team schema
+  
+  ├── routes/
+  
+  │   ├── authRoutes.js              # Routes for authentication
+  
+  │   ├── matchFinderRoutes.js       # Routes for matchmaking functions
+  
+  │   ├── teamRoutes.js              # Routes for team management
+  
+  │   ├── userRoutes.js              # Routes for user profile and leaderboard
+  
+  │   └── walletRoutes.js            # Routes for wallet functions
+  
+  ├── src/
+  
+  │   ├── components/
+  
+  │   │   ├── AddFunds.js            # Component to add funds to wallet
+  
+  │   │   ├── WalletBalance.js       # Displays user balance
+  
+  │   │   └── TransactionHistory.js  # Displays transaction history
+  
+  │   └── services/
+  
+  │       ├── api.js                 # Configures Axios for API requests
+  
+  │       └── auth.js                # Auth API calls (login, register)
+  
+  ├── tests/
+  
+  │   ├── auth.test.js               # Tests for auth API
+  
+  │   ├── match.test.js              # Tests for match API
+  
+  │   ├── leaderboard.test.js        # Tests for leaderboard API
+  
+  │   └── wallet.test.js             # Tests for wallet functions
+  
+  ├── .env                           # Environment variables
+  
+  ├── server.js                      # Main server entry point
+  
+  └── package.json                   # Project dependencies and scripts
 
 **API Documentation**
   Below is an overview of the main API routes in the project. Each route may require JWT authentication to ensure secure access.
+  
 **Authentication Routes (/api/auth)**
-  POST /register: Registers a new user.
-    POST /login: Logs in a user and returns a JWT.
+  - POST /register: Registers a new user.
+    - POST /login: Logs in a user and returns a JWT.
+
 **Wallet Routes (/api/wallet)**
-  POST /add-funds: Adds funds to the user’s wallet.
-    GET /balance: Retrieves the user’s current balance.
-      GET /transactions: Retrieves the user’s transaction history.
+  - POST /add-funds: Adds funds to the user’s wallet.
+    - GET /balance: Retrieves the user’s current balance.
+      - GET /transactions: Retrieves the user’s transaction history.
+
 **Matchmaking Routes (/api/matches)**
-  POST /create: Creates a new match (requires sufficient balance).
-    POST /join: Joins an existing match (requires sufficient balance).
+  - POST /create: Creates a new match (requires sufficient balance).
+    - POST /join: Joins an existing match (requires sufficient balance).
+
 **Leaderboard Routes (/api/user/leaderboard)**
-  GET /leaderboard: Retrieves a list of top players by Elo rating.
+  - GET /leaderboard: Retrieves a list of top players by Elo rating.
+
 **Additional Notes**
-  Environment Security: Ensure that .env is in .gitignore to avoid committing sensitive data to version control.
-    Database Initialization: If running in production, make sure MongoDB is properly configured and secured.
-      Error Handling: The current implementation provides basic error handling. For production, consider implementing custom error handlers.
+  - Environment Security: Ensure that .env is in .gitignore to avoid committing sensitive data to version control.
+    - Database Initialization: If running in production, make sure MongoDB is properly configured and secured.
+      - Error Handling: The current implementation provides basic error handling. For production, consider implementing custom error handlers.
