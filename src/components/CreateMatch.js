@@ -1,6 +1,6 @@
 // File: src/components/CreateMatch.js
 import React, { useState } from 'react';
-import axios from 'axios';
+import supabase from '../config/db';
 
 const CreateMatch = () => {
     const [game, setGame] = useState('Warzone');
@@ -9,14 +9,13 @@ const CreateMatch = () => {
 
     const createMatch = async () => {
         try {
-            const token = localStorage.getItem('token');
-            const response = await axios.post(
-                '/api/matches/create',
-                { game, format, wager },
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
+            const user = supabase.auth.user();
+            const { error } = await supabase
+                .from('matches')
+                .insert([{ game, format, wager, teamA: user.id, status: 'open' }]);
+
+            if (error) throw error;
             alert('Match created successfully!');
-            // Redirect to match finder or profile if needed
         } catch (error) {
             alert('Error creating match. Ensure you have enough balance.');
         }
