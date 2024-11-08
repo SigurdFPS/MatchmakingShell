@@ -1,7 +1,12 @@
 // File: server.js
 require('dotenv').config();
 const express = require('express');
-const connectDB = require('./config/db');
+const { createClient } = require('@supabase/supabase-js');
+
+// Initialize Supabase client
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_KEY;
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Import routes
 const authRoutes = require('./routes/authRoutes');
@@ -11,10 +16,15 @@ const userRoutes = require('./routes/userRoutes');
 
 // Initialize Express app
 const app = express();
-connectDB();
 
 // Middleware
 app.use(express.json()); // Parse JSON requests
+
+// Inject Supabase client into request object for routes to access
+app.use((req, res, next) => {
+    req.supabase = supabase;
+    next();
+});
 
 // Route handling
 app.use('/api/auth', authRoutes);
