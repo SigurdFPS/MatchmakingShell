@@ -1,6 +1,6 @@
 // File: src/components/MatchFinder.js
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import supabase from '../config/db';
 
 const MatchFinder = () => {
     const [matches, setMatches] = useState([]);
@@ -8,8 +8,16 @@ const MatchFinder = () => {
 
     const fetchMatches = async () => {
         try {
-            const response = await axios.get('/api/matchfinder/find', { params: filters });
-            setMatches(response.data);
+            const { data, error } = await supabase
+                .from('matches')
+                .select('*')
+                .eq('status', 'open')
+                .eq(filters.game && 'game', filters.game)
+                .eq(filters.format && 'format', filters.format)
+                .lte('wager', filters.maxWager || Infinity);
+
+            if (error) throw error;
+            setMatches(data);
         } catch (error) {
             console.error('Error fetching matches:', error);
         }
@@ -46,11 +54,11 @@ const MatchFinder = () => {
 
             <div>
                 {matches.map((match) => (
-                    <div key={match._id}>
+                    <div key={match.id}>
                         <h3>{match.game} - {match.format}v{match.format}</h3>
                         <p>Wager: ${match.wager}</p>
                         <p>Status: {match.status}</p>
-                        <button onClick={() => joinMatch(match._id)}>Join Match</button>
+                        <button onClick={() => joinMatch(match.id)}>Join Match</button>
                     </div>
                 ))}
             </div>
@@ -60,7 +68,11 @@ const MatchFinder = () => {
 
 const joinMatch = async (matchId) => {
     try {
-        await axios.post('/api/matchfinder/join', { matchId, teamBId: "YOUR_TEAM_ID" });
+        const { error } = await supabase
+            .from('match_participants')
+            .insert({ match_id: matchId, team_b_id: "YOUR_TEAM_ID" });
+
+        if (error) throw error;
         alert('Joined match successfully!');
     } catch (error) {
         alert('Error joining match');
