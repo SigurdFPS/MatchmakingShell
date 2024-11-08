@@ -1,44 +1,19 @@
 // File: models/userModel.js
-const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
 
-// Define the schema for the User
-const userSchema = new mongoose.Schema({
-    username: { type: String, required: true, unique: true },
-    email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
-    balance: { type: Number, default: 0 },
-    teams: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Team' }], // References team IDs
-    eloRating: { type: Number, default: 1000 }, // Default Elo rating
-    matchesPlayed: { type: Number, default: 0 },
-    matchesWon: { type: Number, default: 0 },
-    balance: { type: Number, default: 0 }, // Wallet balance
-    transactionHistory: [transactionSchema], // Array of transactions
-}, { timestamps: true });
+// In Supabase, use the SQL editor to create the following schema:
 
-// Hash password before saving to ensure security
-userSchema.pre('save', async function(next) {
-    if (!this.isModified('password')) return next();
-    try {
-        const salt = await bcrypt.genSalt(10);
-        this.password = await bcrypt.hash(this.password, salt);
-        next();
-    } catch (error) {
-        next(error);
-    }
-});
+/*
+CREATE TABLE users (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    balance DECIMAL DEFAULT 0,
+    eloRating INT DEFAULT 1000,
+    matchesPlayed INT DEFAULT 0,
+    matchesWon INT DEFAULT 0,
+    transactionHistory JSONB -- Array of transactions as JSON
+);
+*/
 
-const transactionSchema = new mongoose.Schema({
-    amount: { type: Number, required: true },
-    type: { type: String, enum: ['credit', 'debit'], required: true }, // 'credit' for deposits, 'debit' for bets
-    date: { type: Date, default: Date.now },
-    description: { type: String },
-});
-
-// Method to compare hashed passwords during login
-userSchema.methods.comparePassword = async function(candidatePassword) {
-    return await bcrypt.compare(candidatePassword, this.password);
-};
-
-// Export the User model
-module.exports = mongoose.model('User', userSchema);
+// This file can be removed, as the database schema is now managed directly in Supabase.
