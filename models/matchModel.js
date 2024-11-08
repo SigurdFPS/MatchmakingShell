@@ -1,13 +1,17 @@
 // File: models/matchModel.js
-const mongoose = require('mongoose');
 
-const matchSchema = new mongoose.Schema({
-    format: { type: Number, required: true, enum: [1, 2, 3] },  // 1v1, 2v2, or 3v3
-    wager: { type: Number, required: true },  // Amount wagered
-    teamA: { type: mongoose.Schema.Types.ObjectId, ref: 'Team' },
-    teamB: { type: mongoose.Schema.Types.ObjectId, ref: 'Team' },
-    status: { type: String, default: 'open', enum: ['open', 'in-progress', 'completed'] },
-    game: { type: String, required: true }  // Game type (e.g., "Call of Duty")
-});
+// In Supabase, use the SQL editor to create the following schema:
 
-module.exports = mongoose.model('Match', matchSchema);
+/*
+CREATE TABLE matches (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    format INT CHECK (format IN (1, 2, 3)),
+    wager DECIMAL NOT NULL,
+    teamA_id BIGINT REFERENCES teams(id),
+    teamB_id BIGINT REFERENCES teams(id),
+    status VARCHAR(20) DEFAULT 'open' CHECK (status IN ('open', 'in-progress', 'completed')),
+    game VARCHAR(50) NOT NULL
+);
+*/
+
+// This file can be removed, as the database schema is now managed directly in Supabase.
