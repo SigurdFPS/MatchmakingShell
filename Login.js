@@ -1,18 +1,20 @@
 // File: src/components/Login.js
 import React, { useState } from 'react';
-import axios from 'axios';
+import supabase from '../config/db';
 
 const Login = () => {
-    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
 
     const handleLogin = async () => {
         try {
-            const response = await axios.post('/api/auth/login', { username, password });
-            localStorage.setItem('token', response.data.token);
+            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+            if (error) throw error;
+
+            localStorage.setItem('token', data.session.access_token);
             alert('Login successful');
-            window.location.href = '/profile';  // Redirect to user profile
+            window.location.href = '/profile';
         } catch (error) {
             setError('Invalid credentials');
         }
@@ -22,10 +24,10 @@ const Login = () => {
         <div>
             <h2>Login</h2>
             <input
-                type="text"
-                placeholder="Username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
             />
             <input
                 type="password"
