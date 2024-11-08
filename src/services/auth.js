@@ -1,10 +1,18 @@
 // File: src/services/auth.js
-import api from './api';
+import supabase from './api';
 
-export const login = async (username, password) => {
-    return api.post('/auth/login', { username, password });
+export const login = async (email, password) => {
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) throw error;
+    return data;
 };
 
-export const register = async (username, email, password) => {
-    return api.post('/auth/register', { username, email, password });
+export const register = async (email, password, username) => {
+    const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { data: { username } },
+    });
+    if (error) throw error;
+    return data;
 };
