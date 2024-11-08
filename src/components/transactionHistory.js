@@ -1,14 +1,21 @@
 // File: src/components/TransactionHistory.js
 import React, { useState, useEffect } from 'react';
-import api from '../services/api';
+import supabase from '../config/db';
 
 const TransactionHistory = () => {
     const [transactions, setTransactions] = useState([]);
 
     useEffect(() => {
         const fetchTransactions = async () => {
-            const response = await api.get('/wallet/transactions');
-            setTransactions(response.data);
+            const user = supabase.auth.user();
+            const { data, error } = await supabase
+                .from('transactionHistory')
+                .select('*')
+                .eq('userId', user.id)
+                .order('date', { ascending: false });
+
+            if (error) throw error;
+            setTransactions(data);
         };
         fetchTransactions();
     }, []);
