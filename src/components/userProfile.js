@@ -1,6 +1,6 @@
 // File: src/components/UserProfile.js
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import supabase from '../config/db';
 
 const UserProfile = () => {
     const [user, setUser] = useState(null);
@@ -8,11 +8,15 @@ const UserProfile = () => {
     useEffect(() => {
         const fetchUserProfile = async () => {
             try {
-                const token = localStorage.getItem('token');
-                const response = await axios.get('/api/user/profile', {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
-                setUser(response.data);
+                const user = supabase.auth.user();
+                const { data, error } = await supabase
+                    .from('users')
+                    .select('username, balance, eloRating, matchesPlayed, matchesWon')
+                    .eq('id', user.id)
+                    .single();
+
+                if (error) throw error;
+                setUser(data);
             } catch (error) {
                 console.error('Error fetching user profile:', error);
             }
