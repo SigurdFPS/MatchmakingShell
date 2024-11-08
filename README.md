@@ -101,7 +101,7 @@ Clone the Repository:
 
   ├── config/
   
-  │   └── db.js # MongoDB connection setup
+  │   └── db.js # Setup now for Supabase
   
   ├── controllers/
   
