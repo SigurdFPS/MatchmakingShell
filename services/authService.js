@@ -1,10 +1,14 @@
 // File: services/authService.js
-const jwt = require('jsonwebtoken');
+const supabase = require('../config/db');
 
-exports.generateToken = (userId) => {
-    return jwt.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: '1h' });
+exports.generateToken = async (email, password) => {
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) throw error;
+    return data.session.access_token;
 };
 
-exports.verifyToken = (token) => {
-    return jwt.verify(token, process.env.JWT_SECRET);
+exports.verifyToken = async (token) => {
+    const { data, error } = await supabase.auth.getUser(token);
+    if (error || !data.user) throw new Error('Invalid token');
+    return data.user;
 };
