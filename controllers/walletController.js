@@ -1,19 +1,36 @@
 // File: controllers/walletController.js
-const User = require('../models/userModel');
 
 // Add funds to wallet
 exports.addFunds = async (req, res) => {
     try {
         const { userId, amount } = req.body;
 
-        if (amount <= 0) return res.status(400).json({ message: 'Amount must be greater than zero' });
+        if (amount <= 0) {
+            return res.status(400).json({ message: 'Amount must be greater than zero' });
+        }
 
-        const user = await User.findById(userId);
-        user.balance += amount;
-        user.transactionHistory.push({ amount, type: 'credit', description: 'Funds added' });
+        // Update the user's balance and add a transaction entry
+        const { data: updatedUser, error: balanceError } = await req.supabase
+            .from('users')
+            .update({ balance: req.supabase.raw(`balance + ${amount}`) })
+            .eq('id', userId)
+            .select('balance')
+            .single();
 
-        await user.save();
-        res.status(200).json({ message: 'Funds added successfully', balance: user.balance });
+        if (balanceError) {
+            throw balanceError;
+        }
+
+        // Add transaction history entry
+        const { error: transactionError } = await req.supabase
+            .from('transactionHistory')
+            .insert([{ userId, amount, type: 'credit', description: 'Funds added', date: new Date() }]);
+
+        if (transactionError) {
+            throw transactionError;
+        }
+
+        res.status(200).json({ message: 'Funds added successfully', balance: updatedUser.balance });
     } catch (error) {
         res.status(500).json({ message: 'Error adding funds', error });
     }
@@ -22,7 +39,16 @@ exports.addFunds = async (req, res) => {
 // View wallet balance
 exports.getBalance = async (req, res) => {
     try {
-        const user = await User.findById(req.user.id);
+        const { data: user, error } = await req.supabase
+            .from('users')
+            .select('balance')
+            .eq('id', req.user.id)
+            .single();
+
+        if (error) {
+            throw error;
+        }
+
         res.status(200).json({ balance: user.balance });
     } catch (error) {
         res.status(500).json({ message: 'Error fetching balance', error });
@@ -32,8 +58,17 @@ exports.getBalance = async (req, res) => {
 // Get transaction history
 exports.getTransactionHistory = async (req, res) => {
     try {
-        const user = await User.findById(req.user.id);
-        res.status(200).json(user.transactionHistory);
+        const { data: transactions, error } = await req.supabase
+            .from('transactionHistory')
+            .select('*')
+            .eq('userId', req.user.id)
+            .order('date', { ascending: false });
+
+        if (error) {
+            throw error;
+        }
+
+        res.status(200).json(transactions);
     } catch (error) {
         res.status(500).json({ message: 'Error fetching transaction history', error });
     }
