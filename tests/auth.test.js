@@ -1,15 +1,14 @@
 // File: tests/auth.test.js
 const request = require('supertest');
-const app = require('../server');
-const mongoose = require('mongoose');
+const supabase = require('../src/services/api');
 
 beforeEach(async () => {
-    await mongoose.connection.dropDatabase();
+    await supabase.from('users').delete().neq('id', 0);  // Clear users table
 });
 
 describe('Auth API', () => {
     it('should register a new user', async () => {
-        const response = await request(app)
+        const response = await request(supabase)
             .post('/api/auth/register')
             .send({ username: 'testuser', email: 'test@example.com', password: 'password123' });
         expect(response.statusCode).toBe(201);
@@ -17,15 +16,14 @@ describe('Auth API', () => {
     });
 
     it('should log in a user', async () => {
-        // Register a user first
-        await request(app)
+        await request(supabase)
             .post('/api/auth/register')
             .send({ username: 'testuser', email: 'test@example.com', password: 'password123' });
 
-        const response = await request(app)
+        const response = await request(supabase)
             .post('/api/auth/login')
-            .send({ username: 'testuser', password: 'password123' });
+            .send({ email: 'test@example.com', password: 'password123' });
         expect(response.statusCode).toBe(200);
-        expect(response.body).toHaveProperty('token');
+        expect(response.body).toHaveProperty('session');
     });
 });
