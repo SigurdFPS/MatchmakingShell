@@ -1,6 +1,6 @@
 // File: src/components/AddFunds.js
 import React, { useState } from 'react';
-import api from '../services/api';
+import supabase from '../config/db';
 
 const AddFunds = () => {
     const [amount, setAmount] = useState(0);
@@ -8,8 +8,15 @@ const AddFunds = () => {
 
     const handleAddFunds = async () => {
         try {
-            const response = await api.post('/wallet/add-funds', { amount });
-            setMessage(`Funds added successfully! New balance: $${response.data.balance}`);
+            const user = supabase.auth.user();
+            const { data, error } = await supabase
+                .from('users')
+                .update({ balance: supabase.raw(`balance + ${amount}`) })
+                .eq('id', user.id)
+                .select('balance');
+
+            if (error) throw error;
+            setMessage(`Funds added successfully! New balance: $${data[0].balance}`);
         } catch (error) {
             setMessage('Error adding funds. Please try again.');
         }
