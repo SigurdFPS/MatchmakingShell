@@ -1,16 +1,8 @@
 // File: src/services/api.js
-import axios from 'axios';
+import { createClient } from '@supabase/supabase-js';
 
-const api = axios.create({
-    baseURL: '/api', // Adjust based on your backend URL
-});
+const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
+const supabaseKey = process.env.REACT_APP_SUPABASE_KEY;
+const supabase = createClient(supabaseUrl, supabaseKey);
 
-api.interceptors.request.use((config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-});
-
-export default api;
+export default supabase;
