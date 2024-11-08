@@ -1,14 +1,19 @@
 // File: src/components/Leaderboard.js
 import React, { useState, useEffect } from 'react';
-import api from '../services/api';
+import supabase from '../config/db';
 
 const Leaderboard = () => {
     const [leaders, setLeaders] = useState([]);
 
     useEffect(() => {
         const fetchLeaderboard = async () => {
-            const response = await api.get('/user/leaderboard');
-            setLeaders(response.data);
+            const { data, error } = await supabase
+                .from('users')
+                .select('username, eloRating')
+                .order('eloRating', { ascending: false })
+                .limit(10);
+            if (error) console.error(error);
+            else setLeaders(data);
         };
         fetchLeaderboard();
     }, []);
@@ -18,7 +23,7 @@ const Leaderboard = () => {
             <h2>Leaderboard</h2>
             <ul>
                 {leaders.map((user, index) => (
-                    <li key={user._id}>
+                    <li key={user.id}>
                         #{index + 1} {user.username} - Elo: {user.eloRating}
                     </li>
                 ))}
