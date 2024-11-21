@@ -22,10 +22,10 @@ This is a matchmaking system built to support cash-based matches for games like 
   Leaderboard: Displays the top players based on their Elo rating or number of wins.
 
 **Technologies Used**
-  Backend: Node.js, Express.js, MongoDB (using Mongoose)
+  Backend: Node.js and Express.js
   Frontend: React, Axios
   Authentication: JWT (JSON Web Tokens)
-  Database Testing: MongoMemoryServer for in-memory MongoDB
+  Database Testing:
   Testing Frameworks: Jest, Supertest
   Environment Management: dotenv
 **Features**
